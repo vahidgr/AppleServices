@@ -1,12 +1,13 @@
 # AppleServices
 
-AppleServices is a Swift Package Manager library that indexes Apple’s documented public developer APIs for iMessage, FaceTime, Calendar, Notes, Reminders, Keychain and Passwords, Pages, Numbers, and Keynote. It also provides one import for the related native SDK frameworks.
+AppleServices is the data-layer package for AppleDevelopmentKit. It implements the domain service protocols using public Apple APIs, provides a ready-to-use dependency factory, indexes documented APIs, and re-exports related native SDK frameworks.
 
 ## Requirements
 
 - Swift 6.4 or later
 - Xcode and the Apple SDKs for the platforms you build
-- iPadOS uses the iOS SDK destination
+- iOS/iPadOS 17 or later
+- macOS 14 or later
 
 The package does not set a deployment target. Each re-exported symbol retains the platform and OS availability declared by Apple’s SDK.
 
@@ -29,6 +30,30 @@ let catalog = AppleServiceCatalog()
 let calendar = catalog.service(named: "Calendar")
 let eventKitAPIs = catalog.search("EventKit")
 ```
+
+## Adapter workflows
+
+AppleDevelopmentKit owns the service protocols and workflow logic. AppleServices depends on those protocols and provides concrete implementations. Add both package products to your app target to use the bundled workflows:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/vahidgr/AppleDevelopmentKit.git", from: "3.0.0"),
+    .package(url: "https://github.com/vahidgr/AppleServices.git", from: "2.0.0")
+]
+```
+
+```swift
+import AppleDevelopmentKit
+import AppleServices
+
+let adapters = await AppleServicesDependencyFactory.makeAppleDevelopmentKitServices(
+    iCloudContainerIdentifier: "iCloud.com.example.app"
+)
+let workflows = await AppleServiceStateContainer(services: adapters)
+await workflows.send(.checkICloudAccount)
+```
+
+The factory and every concrete adapter are public. Apps can also construct `AppleDevelopmentKitServices` with their own implementations of the protocols. The bundle supports FaceTime URL creation, Messages composer URL creation, Calendar events, Reminders, Keychain passwords, iCloud documents, CloudKit records/account status, app URL opening, and iWork PDF export. Host-app entitlements, permissions, App Intents, delegates, Notes integrations, and iCloud synchronization policy remain app-owned.
 
 ## Public catalog API
 

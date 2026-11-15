@@ -4,6 +4,8 @@ This document explains what the `AppleServices` catalog indexes and what the umb
 
 ## Package surface
 
+AppleDevelopmentKit owns the public service protocols and workflows. This package implements those protocols as the data layer and exports a public `AppleServicesDependencyFactory` that returns an `AppleDevelopmentKitServices` bundle. Applications can instead supply their own conforming implementations. The factory defaults to the system CloudKit container; pass an identifier to use a custom container.
+
 ### Catalog types
 
 - `AppleServiceCatalog.services` returns all entries in stable order.

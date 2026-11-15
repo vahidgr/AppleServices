@@ -1,32 +1,26 @@
 // swift-tools-version: 6.4
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "AppleServices",
+    platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "AppleServices",
-            targets: ["AppleServices"]
-        ),
+        .library(name: "AppleServices", targets: ["AppleServices"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/vahidgr/AppleDevelopmentKit.git", from: "3.0.0"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "AppleServices",
-            swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
-            ],
+            dependencies: [.product(name: "AppleDevelopmentKit", package: "AppleDevelopmentKit")],
+            swiftSettings: [.enableUpcomingFeature("ApproachableConcurrency")]
         ),
         .testTarget(
             name: "AppleServicesTests",
-            dependencies: ["AppleServices"],
-            swiftSettings: [
-                .enableUpcomingFeature("ApproachableConcurrency"),
-            ],
+            dependencies: ["AppleServices", .product(name: "AppleDevelopmentKit", package: "AppleDevelopmentKit")],
+            swiftSettings: [.enableUpcomingFeature("ApproachableConcurrency")]
         ),
     ]
 )
